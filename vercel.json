@@ -1,9 +1,30 @@
 {
     "version": 2,
-    "rewrites": [
+    "builds": [
         {
-            "source": "/(.*)",
-            "destination": "/api"
+            "src": "server.js",
+            "use": "@vercel/node"
+        },
+        {
+            "src": "*.json",
+            "use": "@vercel/static"
         }
+    ],
+    "routes": [
+        {
+            "src": "/search",
+            "dest": "/server.js"
+        },
+        {
+            "src": "/save/:word",
+            "dest": "/server.js"
+        },
+        {
+            "src": "/(.*)",
+            "dest": "/server.js"
+        }
+    ],
+    "files": [
+        "data/**"
     ]
 }

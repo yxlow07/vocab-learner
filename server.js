@@ -5,7 +5,7 @@ const path = require('path'); // Node.js module for working with file and direct
 
 const app = express();
 const port = 3000;
-const vocabFile = 'data/cleaned_vocab.json';
+const vocabFile = 'public/cleaned_vocab.json';
 let vocabularies = [];
 
 function formatDefinitions(data) {
@@ -83,6 +83,10 @@ app.get('/save/:word', async (req, res) => {
         return res.status(404).send('Word not found and definition could not be fetched.');
     }
 });
+
+app.get("/words", () => {
+    console.log(vocabularies);
+})
 
 // Start the server
 app.listen(port, () => {
