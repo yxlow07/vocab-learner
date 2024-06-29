@@ -1,0 +1,18 @@
+{
+  "dependencies": {
+    "axios": "^1.7.2",
+    "concurrently": "^8.2.2",
+    "express": "^4.19.2",
+    "nodemon": "^3.1.4",
+    "tailwindcss": "^3.4.4"
+  },
+  "devDependencies": {
+    "@tailwindcss/forms": "^0.5.7"
+  },
+  "scripts": {
+    "dev": "concurrently \"nodemon server.js\" \"npm run watch:css\"",
+    "watch:css": "tailwindcss build -i ./public/tw.css -o public/style.css --watch",
+    "run": "nodemon server.js",
+    "sort": "node sorter.js"
+  }
+}

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vocabulary Search</title>
+    <!-- Link to Tailwind CSS -->
+    <link href="style.css" rel="stylesheet">
+</head>
+
+<body class="bg-gray-100 p-6">
+    <h1 class="text-3xl font-bold mb-6 w-full text-center">Vocabulary Search</h1>
+    <div class="flex mb-4">
+        <input type="text" id="searchInput" class="flex-1 border border-gray-300 rounded-l-md py-2 px-4"
+            placeholder="Search for a word...">
+        <button onclick="searchVocab()"
+            class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-r-md">Search</button>
+    </div>
+    <div id="results" class="bg-white shadow-md rounded-md p-4">
+        <h3>Search to see results</h3>
+    </div>
+
+    <!-- Script to handle search and display results -->
+    <script>
+        let timeoutId = null;
+
+        async function searchVocab() {
+            const query = document.getElementById('searchInput').value;
+            if (!query) {
+                alert('Please enter a search query');
+                return;
+            }
+
+            const response = await fetch(`/search?q=${query}`);
+            const results = await response.json();
+            displayResults(results, query);
+        }
+
+        function debounce(func, delay) {
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(func, delay);
+        }
+
+        function handleSearch() {
+            debounce(() => {
+                let query = document.getElementById('searchInput').value;
+                if (!query) {
+                    // Clear results if query is empty
+                    document.getElementById('results').innerHTML = '';
+                    return;
+                }
+
+                fetch(`/search?q=${query}`)
+                    .then(response => response.json())
+                    .then(results => {
+                        displayResults(results, query);
+                    })
+                    .catch(error => console.error('Error searching:', error));
+            }, 300); // Debounce delay of 300ms
+        }
+
+        document.getElementById('searchInput').addEventListener('keyup', handleSearch);
+
+        function displayResults(results, searchValue) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '';
+
+            if (results.length === 0) {
+                console.log(searchValue)
+                resultsDiv.innerHTML = `<p>No results found. Do you want to add <a id="add" href="/save/${searchValue}">${searchValue}</a> to the list?</p>`;
+                document.getElementById('add').addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const url = e.target.href;
+                    addWordToList(url);
+                    handleSearch();
+                });
+                return;
+            }
+
+            results.forEach(result => {
+                const resultDiv = document.createElement('div');
+                resultDiv.classList.add('mb-2');
+                resultDiv.innerHTML = `<strong>${result.word}</strong>: ${result.definition}`;
+                resultsDiv.appendChild(resultDiv);
+            });
+        }
+
+        function addWordToList(url) {
+            fetch(url)
+                .then(response => console.log(response.json()))
+                .then(data => {
+                    console.log(`Word '${data.word}' added successfully!`);
+                    // Optionally update UI or perform other actions
+                })
+                .catch(error => {
+                    console.error('Error adding word:', error);
+                    console.warn('Failed to add word. Please try again.');
+                });
+        }
+        (function () {
+            debounce(() => {
+                let query = "*";
+
+                fetch(`/search?q=${query}`)
+                    .then(response => response.json())
+                    .then(results => {
+                        displayResults(results, query);
+                    })
+                    .catch(error => console.error('Error searching:', error));
+            }, 300); // Debounce delay of 300ms
+        })();
+    </script>
+</body>
+
+</html>
