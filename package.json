@@ -13,6 +13,7 @@
     "dev": "concurrently \"nodemon server.js\" \"npm run watch:css\"",
     "watch:css": "tailwindcss build -i ./public/tw.css -o public/style.css --watch",
     "run": "nodemon server.js",
-    "sort": "node sorter.js"
+    "sort": "node sorter.js",
+    "build": "npm install"
   }
 }
